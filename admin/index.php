@@ -78,7 +78,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <div class="col-lg-6">
             <!--add a component here-->
             <div class="container2">
-  <form method="POST" action="index.php">
+  <form method="POST" action="add_table.php">
         <div class="row" style="height: 800px; margin-top: 20px;">
             <div class="col-md-4 ">
       <br>Table Number:
@@ -206,7 +206,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
           if (isset($_POST['submit'])) {
 
             $Table_number = $_POST['table_number'];
-            $pass = $bcrypt->hash(trim($_POST['password'])); // password hashing for security reasons
+            $Password = $bcrypt->hash($_POST['password']);
+            $pass = $Password; // password hashing for security reasons
             $L_status = "0";
             $Status = "offline";
             # Here is where we add table to database

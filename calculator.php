@@ -99,7 +99,7 @@ $table_number = $_SESSION['table_number'];
         <button class="btn btn-warning" id="meals_buttons" name="appetizer"><font color="white">Appetizer</font></button><br><br>
         <button class="btn btn-success" id="meals_buttons" name="starter">Starter</button><br><br>
         <button class="btn btn-danger" id="meals_buttons" name="beverages">Beverages</button><br><br>
-        <button class="btn btn-info" id="meals_buttons" name="buffet">Buffet</button>
+        <button class="btn btn-info" id="meals_buttons" name="buffet">Dessert</button>
       </form>
       </div>
       <div class="col-md-4 " id="items_section">
@@ -288,7 +288,6 @@ $table_number = $_SESSION['table_number'];
             while ($row = mysqli_fetch_assoc($query_execute)) {
              $class = $row['classification']; 
              $name = $row['name'];
-             $type = $row['type'];
              $price = $row['price'];
              $image = $row['image'];
              $id = $row['id'];
@@ -299,14 +298,14 @@ $table_number = $_SESSION['table_number'];
               </div>
                <div class='card-body'>
                Class: $class</br>
-               Type: $type</br>
-               Name: $name</br>
-               Price: $price<br><br>
+               Meal Name: $name</br>
+               Unit Price: $price<br><br>
                <form method='POST' action='calculator.php?item_id=$id'>
                <input type='number' class='form-control' placeholder='Enter quantity you want' name='quantity' required='required'></br>
                </div>
-               <div class='card-footer'>
-               <button class='btn btn-warning' id='selected_item_button' name='select_item'><font color='white'>Add to cart</font></button>
+               <div class='row'>
+               <button class='btn btn-info' id='selected_item_button' name='select_item'><font color='white'>Submit Order</font></button>
+               <button class='btn btn-danger' id='selected_item_button' name='select_item'><font color='white'>Cancel Order</font></button>
                </form>
                </div>
                </div></br>
@@ -354,6 +353,7 @@ $table_number = $_SESSION['table_number'];
                require_once 'conn.php';
                $sqli = "SELECT total_price FROM total_price WHERE table_number ='$table_number' AND payment_status = 'Pending'";
                $execute_sqli = mysqli_query($conn,$sqli);
+               $total_cost = '';
                while ($row = mysqli_fetch_assoc($execute_sqli)) {
                 $total_cost = $row['total_price'];
               }
@@ -407,14 +407,14 @@ $table_number = $_SESSION['table_number'];
               </div>
                <div class='card-body'>
                Class: </br>
-               Type: </br>
-               Name: </br>
-               Price: <br><br>
+               Meal Name: </br>
+               Unit Price: <br><br>
                <form method='POST' action='calculator.php'>
                <input type='number' class='form-control' placeholder='Enter quantity you want' name='quantity' required='required'></br>
                </div>
                <div class='card-footer'>
-               <button class='btn btn-warning' id='selected_item_button' name='select_item'><font color='white'>Add to cart</font></button>
+               <button class='btn btn-info' id='selected_item_button' name='select_item'><font color='white'>Submit Order</font></button>
+               <button class='btn btn-danger' id='selected_item_button' name='select_item'><font color='white'>Cancel Order</font></button>
                </form>
                </div>
                </div></br>
@@ -462,6 +462,7 @@ $table_number = $_SESSION['table_number'];
                require_once 'conn.php';
                $sqli = "SELECT total_price FROM total_price WHERE table_number ='$table_number' AND payment_status = 'Pending'";
                $execute_sqli = mysqli_query($conn,$sqli);
+               $total_cost = '';
                while ($row = mysqli_fetch_assoc($execute_sqli)) {
                 $total_cost = $row['total_price'];
               }

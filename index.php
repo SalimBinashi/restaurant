@@ -1,15 +1,36 @@
 <?php
   session_start();
-  if (!isset($_SESSION['table_id'])) {
+  if (!isset($_SESSION['id'])) {
     header('Location:table_login.php');
   }
 
-  $table_id = $_SESSION['table_id'];
+  $table_id = $_SESSION['id'];
 ?>
+<?php
+        $table_id = $_SESSION['id'];
+        require_once 'conn.php';
+        
+
+        $Status = "online";
+
+    if (isset($_POST['status'])) {
+      # code...
+
+      $sql ="UPDATE `tables` SET `status` = '$Status' WHERE `id` = $table_id";
+      $query_execute = mysqli_query($conn, $sql);
+          if ($query_execute) {
+            # code...
+            echo "Activated";
+            header("location:calculator.php");
+          }
+      
+    }
+  ?>
 <!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Activate Table</title>
 <style>
   /*html { 
   background: url(images/bg5.jpg) no-repeat center center fixed; 
@@ -79,7 +100,7 @@ body{
 
 }
 
-@keyframe animate{
+@keyframes animate{
   0%,100%{
     background-image: url(images/hd1.jpg);
   }
@@ -100,7 +121,7 @@ body{
   <div class="container">
     <div class="outer">
       <div class="details">
-        <form method="POST" action="activate.php">
+        <form method="POST" action="index.php">
           <center><button class="button" type="submit" name="status"><span>Activate Table </span></button></center>
         </form>
         

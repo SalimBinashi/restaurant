@@ -1,5 +1,28 @@
-<?php 
- // create Bcrypt class
+<?php
+// Initialize the session
+session_start();
+ 
+// Check if the user is already logged in, if yes then redirect them to their respective homepage
+if(isset($_SESSION["loggedin"]) == true){
+  if ($_SESSION["role"] == "chef") {
+    // chef...
+    echo "You are not authorized to view this page";
+    echo "<script>window.open('chef.php', '_self');</script>";
+  } else if ($_SESSION["role"] == "cashier") {
+    // cashier...
+        echo "You are not authorized to view this page";
+        echo "<script>window.open('cashier.php', '_self');</script>";
+
+  }
+    
+} else {
+    // code...
+    header("location: login.php");
+      exit;
+  }
+?>
+<?php
+  // create Bcrypt class
       class Bcrypt{
         private $rounds;
 
@@ -111,61 +134,77 @@
       $bcrypt = new Bcrypt(15);
       error_reporting(E_ALL);
       ini_set('display_errors', 1);
-
-  require_once 'conn.php';
+      // db connection
+            require_once 'conn.php';
 
   if (isset($_POST['submit'])) {
 
     # initialize the variables
-    $table_name = $_POST['table'];
-    $Password = $bcrypt->hash($_POST['password']);
-    $pass = $Password; // password hashing for security reasons
+    $email = $_POST['email'];
+    $pass = $bcrypt->hash($_POST['password']);
    // $pass = sha1($Password); # changing password from plain text to hexadecimal value for security
 
-    # bind selected variables to the table_name which in this case is the table_number
-    if ($stmt = $conn->prepare('SELECT `id`, `table_number`, `password` FROM `tables` WHERE `table_number` = ?')) {
-      
-      $stmt->bind_param('s', $_POST['table']);
+    if ($stmt = $conn -> prepare('SELECT `id`, `email`, `password`, `role` FROM `users` WHERE `email` = ?')) {
+      // bind params
+      $stmt->bind_param('s', $_POST['email']);
       $stmt->execute();
       $stmt->store_result();
 
-      # check whether table number existss in db
+      // from the results check if the email exists
       if ($stmt->num_rows > 0) {
-        
-        $stmt->bind_result($table_id, $table_number, $pass_from_db);
+        // record exists
+        $stmt->bind_result($id, $email, $pass_from_db, $role);
         $stmt->fetch();
 
-       # if it exists, checking whether password input is correct
-        if ($pass != 0) {
-          
+        // checking the password
+        if ($pass == $pass_from_db) {
+
+          // create a session
           session_start();
-          $_SESSION['table_number'] = $table_number;
-          $_SESSION['id'] = $table_id;
-          # updating loging status
-          $L_status = "logged_in";
-          $sql ="UPDATE `tables` SET `L_status` = '$L_status' WHERE `table_number` = '$table_name'";
+          $_SESSION['email'] = $email;
+          $_SESSION['role'] = $role;
+
+
+
+          //update the login status
+          $L_status = 1;
+
+          $sql = "UPDATE `users` SET `login_status` = '$L_status' WHERE `email` = '$email'";
+
+          //execute
           $query_execute = mysqli_query($conn, $sql);
+
+          //check if execution is successfull
           if ($query_execute) {
-            # if all is okay, change into the index file
-            echo "<script>window.open('index.php', '_self')</script>";
+            $_SESSION['login_status'] = $login_status;
+
+            // if successful check role
+            if ($role === "chef") {
+              // navigate to chef
+              echo "<script>window.open('chef.php', '_self')</script>";
+
+            } else if ($role === "cashier") {
+              // navigate to cashier
+              echo "<script>window.open('cahsier.php', '_self')</script>";
+
+            } else if ($role === "admin") {
+              // navigate to admin page
+              echo "<script>window.open('index.php', '_self')</script>";
+
+            }
           } else {
-            $_SESSION['id'] = $table_id;
+              echo "Some error occured";
 
-             echo "<script>window.open('index.php', '_self')</script>";
-
-            // echo "Some error occured";
           }
-          
         } else {
-            $_SESSION['id'] = $table_id;
+            echo "Incorrect email or password";
+            echo "$pass";
+            echo "$pass_from_db";
 
-            echo "<script>window.open('index.php', '_self')</script>";
-
-          // echo "<font color='red'> Incorrect Password or Invalid table name!</font>";
-          // echo $pass."compare".$pass_from_db;
         }
       } else {
-        echo "<font color='red'> Table not found!</font>";
+          echo "User does not exist";
+
       }
     }
   }

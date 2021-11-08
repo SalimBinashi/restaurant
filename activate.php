@@ -1,6 +1,6 @@
 <?php
         session_start();
-        $table_id = $_SESSION['table_id'];
+        $table_id = $_SESSION['id'];
         require_once 'conn.php';
         
 
